@@ -1,1 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
 
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | MA TAQWAL ILAH</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-success shadow">
+        <div class="container">
+            <span class="navbar-brand fw-bold">
+                🕌 MA TAQWAL ILAH
+            </span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+
+        <!-- Card Selamat Datang -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+
+                <h3>AHLAN WASAHLAN 👋</h3>
+
+                <h5 id="namaGuru"></h5>
+
+            </div>
+        </div>
+
+        <!-- Tombol Menu -->
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <button class="btn btn-success w-100 p-4">
+                    🟢 Absen Masuk
+                </button>
+            </div>
+
+            <div class="col-md-6">
+                <button class="btn btn-danger w-100 p-4">
+                    🔴 Absen Pulang
+                </button>
+            </div>
+
+            <div class="col-md-6">
+                <button class="btn btn-primary w-100 p-4">
+                    📸 Selfie
+                </button>
+            </div>
+
+            <div class="col-md-6">
+                <button
+                    class="btn btn-warning w-100 p-4"
+                    onclick="cekLokasi()">
+
+                    📍 Cek Lokasi
+
+                </button>
+            </div>
+
+            <div class="col-md-6">
+                <button class="btn btn-info w-100 p-4">
+                    📊 Rekap
+                </button>
+            </div>
+
+            <div class="col-md-6">
+                <button class="btn btn-dark w-100 p-4">
+                    🚪 Logout
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Status Lokasi -->
+        <div class="card shadow mt-4">
+
+            <div class="card-body">
+
+                <h4>📍 Status Lokasi</h4>
+
+                <p id="statusLokasi">
+
+                    Belum dicek
+
+                </p>
+
+                <div id="hasilLokasi"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Script Nama Guru -->
+    <script>
+
+        document.getElementById("namaGuru").innerHTML =
+            localStorage.getItem("nama");
+
+    </script>
+
+    <!-- JavaScript -->
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/gps.js"></script>
+
+</body>
+
+</html>
