@@ -85,16 +85,39 @@
     id="video"
     autoplay
     playsinline
-    class="w-100 rounded border">
+    class="w-100 rounded border"
+    style="max-height:350px;">
 </video>
 
-<button
-    class="btn btn-primary w-100 mt-3"
-    onclick="bukaKamera()">
+<canvas
+    id="canvas"
+    style="display:none;">
+</canvas>
 
-    📷 Aktifkan Kamera
+<img
+    id="preview"
+    class="img-fluid rounded border mt-3"
+    style="display:none;">
+
+<div class="d-grid gap-2 mt-3">
+
+<button
+class="btn btn-primary"
+onclick="bukaKamera()">
+
+📷 Aktifkan Kamera
 
 </button>
+
+<button
+class="btn btn-success"
+onclick="ambilFoto()">
+
+📸 Ambil Foto
+
+</button>
+
+</div>
 
             </div>
 
