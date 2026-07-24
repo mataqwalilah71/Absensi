@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Absen Guru | MA TAQWAL ILAH</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-success shadow">
+        <div class="container">
+            <span class="navbar-brand fw-bold">
+                🕌 ABSENSI MA TAQWAL ILAH
+            </span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+
+        <!-- Data Guru -->
+        <div class="card shadow mb-3">
+            <div class="card-body">
+
+                <h3>📝 Absen Kehadiran</h3>
+
+                <hr>
+
+                <p><strong>Nama Guru :</strong></p>
+                <h4 id="namaGuru"></h4>
+
+                <p class="mt-3"><strong>Tanggal :</strong></p>
+                <h5 id="tanggal"></h5>
+
+                <p class="mt-3"><strong>Jam :</strong></p>
+                <h3 class="text-primary" id="jam"></h3>
+
+            </div>
+        </div>
+
+        <!-- Status GPS -->
+        <div class="card shadow mb-3">
+
+            <div class="card-body">
+
+                <h4>📍 Status Lokasi</h4>
+
+                <p id="statusLokasi">
+                    Belum dicek
+                </p>
+
+                <div id="hasilLokasi"></div>
+
+                <button
+                    class="btn btn-warning w-100 mt-3"
+                    onclick="cekLokasi()">
+
+                    📍 Cek Lokasi
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Kamera -->
+        <div class="card shadow mb-3">
+
+            <div class="card-body">
+
+                <h4>📷 Selfie</h4>
+
+<video
+    id="video"
+    autoplay
+    playsinline
+    class="w-100 rounded border">
+</video>
+
+<button
+    class="btn btn-primary w-100 mt-3"
+    onclick="bukaKamera()">
+
+    📷 Aktifkan Kamera
+
+</button>
+
+            </div>
+
+        </div>
+
+        <!-- Tombol Absen -->
+        <button
+            class="btn btn-success btn-lg w-100 mb-3"
+            disabled>
+
+            ✅ ABSEN SEKARANG
+
+        </button>
+
+        <a href="dashboard.html"
+            class="btn btn-dark w-100">
+
+            ← Kembali ke Dashboard
+
+        </a>
+
+    </div>
+
+    <script>
+
+        // Nama Guru
+        document.getElementById("namaGuru").innerHTML =
+            localStorage.getItem("nama");
+
+        // Jam Digital
+        function updateJam() {
+
+            const sekarang = new Date();
+
+            document.getElementById("jam").innerHTML =
+                sekarang.toLocaleTimeString("id-ID");
+
+            document.getElementById("tanggal").innerHTML =
+                sekarang.toLocaleDateString("id-ID", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                });
+
+        }
+
+        setInterval(updateJam, 1000);
+
+        updateJam();
+
+    </script>
+
+    <script src="assets/js/gps.js"></script>
+    <script src="assets/js/camera.js"></script>
+
+</body>
+
+</html>
