@@ -114,7 +114,13 @@ async function absenSekarang() {
 
         });
 
-        const hasil = await response.json();
+        const text = await response.text();
+
+console.log(text);
+
+alert(text);
+
+return;
 
         console.log("Respon Server :", hasil);
 
