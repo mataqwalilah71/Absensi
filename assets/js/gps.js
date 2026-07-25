@@ -83,17 +83,32 @@ function successLocation(position) {
     let status = "";
     let warna = "";
 
-    if (distance <= SCHOOL.radius) {
+if (distance <= SCHOOL.radius) {
 
-        status = "✅ Anda berada di AREA SEKOLAH";
-        warna = "green";
+    status = "✅ Anda berada di AREA SEKOLAH";
+    warna = "green";
 
-    } else {
+    // ===========================
+    // Kirim data ke absen.js
+    // ===========================
+    gpsValid = true;
+    latitude = lat;
+    longitude = lng;
+    jarak = distance;
 
-        status = "❌ Anda berada di LUAR AREA SEKOLAH";
-        warna = "red";
+} else {
 
-    }
+    status = "❌ Anda berada di LUAR AREA SEKOLAH";
+    warna = "red";
+
+    // GPS tidak valid
+    gpsValid = false;
+
+}
+
+// Cek apakah tombol sudah boleh aktif
+cekStatusAbsen();
+
 
     document.getElementById("statusLokasi").innerHTML = status;
     document.getElementById("statusLokasi").style.color = warna;

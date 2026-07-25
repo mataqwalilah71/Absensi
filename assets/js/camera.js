@@ -73,6 +73,11 @@ function ambilFoto() {
     }
 
     video.style.display="none";
+// Kirim status ke absen.js
+selfieBase64 = fotoBase64;
+selfieValid = true;
+
+cekStatusAbsen();
 
     alert("✅ Selfie berhasil diambil");
 
