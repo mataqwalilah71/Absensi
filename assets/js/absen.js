@@ -27,9 +27,10 @@ let selfieBase64 = "";
 const WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbwlZkBdmrhfAMzc1G34GtUupp6FzqJGieMqriJGTyxrZvfmVrzOOHl4HCyXXJfv4LhF/exec";
 
-// ===============================
+
+// ======================================
 // CEK STATUS TOMBOL ABSEN
-// ===============================
+// ======================================
 function cekStatusAbsen() {
 
     console.log("GPS :", gpsValid);
@@ -38,7 +39,7 @@ function cekStatusAbsen() {
     const tombol = document.getElementById("btnAbsen");
 
     if (!tombol) {
-        console.log("Tombol tidak ditemukan");
+        console.log("Tombol Absen tidak ditemukan");
         return;
     }
 
@@ -48,12 +49,17 @@ function cekStatusAbsen() {
 
 }
 
-// ===============================
+
+// ======================================
 // ABSEN SEKARANG
-// ===============================
+// ======================================
 async function absenSekarang() {
 
-    // Pastikan GPS sudah valid
+    console.log("===== PROSES ABSEN DIMULAI =====");
+
+    // ===============================
+    // CEK GPS
+    // ===============================
     if (!gpsValid) {
 
         alert("📍 Silakan cek lokasi terlebih dahulu.");
@@ -62,7 +68,9 @@ async function absenSekarang() {
 
     }
 
-    // Pastikan selfie sudah ada
+    // ===============================
+    // CEK SELFIE
+    // ===============================
     if (!selfieValid) {
 
         alert("📷 Silakan ambil foto selfie terlebih dahulu.");
@@ -71,77 +79,240 @@ async function absenSekarang() {
 
     }
 
-    // Susun data yang akan dikirim
-    const data = {
 
-    nama: localStorage.getItem("nama"),
+    // ===============================
+    // WAKTU
+    // ===============================
+    const sekarang = new Date();
 
-    username: localStorage.getItem("username"),
+    const tanggal =
+        sekarang.toLocaleDateString("id-ID");
 
-    jabatan: localStorage.getItem("jabatan"),
+    const jamMasuk =
+        sekarang.toLocaleTimeString("id-ID");
 
-    tanggal: new Date().toLocaleDateString("id-ID"),
-
-    jam: new Date().toLocaleTimeString("id-ID"),
-
-    latitude: latitude,
-
-    longitude: longitude,
-
-    jarak: jarak,
-
-    status: "HADIR",
-
-    selfie: ""
-
-};
-
-    console.log("Data yang dikirim : ", data);
-
-    try {
-
-        const response = await fetch(WEB_APP_URL, {
-
-            method: "POST",
-
-            headers: {
-
-                "Content-Type": "application/json"
-
-            },
-
-            body: JSON.stringify(data)
-
+    const hari =
+        sekarang.toLocaleDateString("id-ID", {
+            weekday: "long"
         });
 
-        const text = await response.text();
 
-console.log(text);
+    // ===============================
+    // DEVICE
+    // ===============================
+    const device =
+        /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+        ? "Mobile"
+        : "PC";
 
-alert(text);
 
-return;
+    // ===============================
+    // BROWSER
+    // ===============================
+    const browser =
+        navigator.userAgent;
 
-        console.log("Respon Server :", hasil);
 
-        if (hasil.status === "success") {
+    // ===============================
+    // DATA ABSENSI
+    // ===============================
+    const data = {
 
-            alert("✅ Absensi berhasil disimpan.");
+        nama:
+            localStorage.getItem("nama") || "",
 
-            // Nonaktifkan tombol agar tidak double klik
-            document.getElementById("btnAbsen").disabled = true;
+        username:
+            localStorage.getItem("username") || "",
 
-        } else {
+        tanggal:
+            tanggal,
 
-            alert("❌ Gagal menyimpan data.");
+        hari:
+            hari,
+
+        jamMasuk:
+            jamMasuk,
+
+        jamPulang:
+            "",
+
+        status:
+            "HADIR",
+
+        latitude:
+            latitude,
+
+        longitude:
+            longitude,
+
+        jarak:
+            jarak,
+
+        selfie:
+            selfieBase64,
+
+        device:
+            device,
+
+        browser:
+            browser
+
+    };
+
+
+    // ===============================
+    // TAMPILKAN DATA DI CONSOLE
+    // ===============================
+    console.log("DATA YANG AKAN DIKIRIM:");
+    console.log(data);
+
+
+    // ===============================
+    // TOMBOL LOADING
+    // ===============================
+    const tombol =
+        document.getElementById("btnAbsen");
+
+    if (tombol) {
+
+        tombol.disabled = true;
+
+        tombol.innerHTML =
+            "⏳ MENYIMPAN ABSENSI...";
+
+    }
+
+
+    // ===============================
+    // KIRIM KE GOOGLE APPS SCRIPT
+    // ===============================
+    try {
+
+        const response = await fetch(
+            WEB_APP_URL,
+            {
+
+                method: "POST",
+
+                // PENTING:
+                // JANGAN menggunakan
+                // Content-Type application/json
+                // agar tidak memicu preflight CORS
+
+                body: JSON.stringify(data)
+
+            }
+        );
+
+
+        // ===============================
+        // BACA RESPONSE SERVER
+        // ===============================
+        const text =
+            await response.text();
+
+
+        console.log(
+            "RESPON GOOGLE APPS SCRIPT:"
+        );
+
+        console.log(text);
+
+
+        // ===============================
+        // PARSE JSON
+        // ===============================
+        let hasil;
+
+        try {
+
+            hasil =
+                JSON.parse(text);
+
+        } catch (e) {
+
+            console.error(
+                "Response bukan JSON:",
+                text
+            );
+
+            alert(
+                "❌ Server memberikan response yang tidak dikenali:\n\n" +
+                text
+            );
+
+            return;
 
         }
 
+
+        // ===============================
+        // HASIL
+        // ===============================
+        if (hasil.status === "success") {
+
+            alert(
+                "✅ ABSENSI BERHASIL DISIMPAN!\n\n" +
+                "Nama : " +
+                data.nama +
+                "\nTanggal : " +
+                data.tanggal +
+                "\nJam : " +
+                data.jamMasuk
+            );
+
+
+            if (tombol) {
+
+                tombol.innerHTML =
+                    "✅ ABSENSI TERSIMPAN";
+
+                tombol.disabled = true;
+
+            }
+
+        } else {
+
+            alert(
+                "❌ GAGAL MENYIMPAN ABSENSI\n\n" +
+                (hasil.pesan || "Kesalahan tidak diketahui")
+            );
+
+
+            if (tombol) {
+
+                tombol.disabled = false;
+
+                tombol.innerHTML =
+                    "✅ ABSEN SEKARANG";
+
+            }
+
+        }
+
+
     } catch (err) {
 
-        console.error(err);
+        console.error(
+            "ERROR ABSENSI:",
+            err
+        );
 
-        alert("❌ Server tidak dapat dihubungi.");
+
+        alert(
+            "❌ GAGAL TERHUBUNG KE SERVER.\n\n" +
+            "Periksa koneksi internet dan Web App Google Apps Script."
+        );
+
+
+        if (tombol) {
+
+            tombol.disabled = false;
+
+            tombol.innerHTML =
+                "✅ ABSEN SEKARANG";
+
+        }
 
     }
 
