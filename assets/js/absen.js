@@ -25,7 +25,7 @@ let selfieBase64 = "";
 // URL GOOGLE APPS SCRIPT
 // ===============================
 const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbwlZkBdmrhfAMzc1G34GtUupp6FzqJGieMqriJGTyxrZvfmVrzOOHl4HCyXXJfv4LhF/exec";
+"https://script.google.com/macros/s/AKfycbyoyG0Xy2KBdbL5EWgB_J4Idh21gRJeGl0YnFeHzF3bZtjHdJyJY0NRmI_wV7AuUvrG/exec";
 
 
 // ======================================
@@ -50,23 +50,103 @@ function cekStatusAbsen() {
 }
 
 
-// ======================================
+// ===============================
 // ABSEN SEKARANG
-// ======================================
+// ===============================
 async function absenSekarang() {
 
-    console.log("===== PROSES ABSEN DIMULAI =====");
-
-    // ===============================
-    // CEK GPS
-    // ===============================
     if (!gpsValid) {
 
         alert("📍 Silakan cek lokasi terlebih dahulu.");
-
         return;
 
     }
+
+    if (!selfieValid) {
+
+        alert("📷 Silakan ambil foto selfie terlebih dahulu.");
+        return;
+
+    }
+
+    const sekarang = new Date();
+
+    const data = {
+
+        nama: localStorage.getItem("nama") || "",
+
+        username: localStorage.getItem("username") || "",
+
+        tanggal: sekarang.toLocaleDateString("id-ID"),
+
+        hari: sekarang.toLocaleDateString("id-ID", {
+            weekday: "long"
+        }),
+
+        jamMasuk: sekarang.toLocaleTimeString("id-ID"),
+
+        jamPulang: "",
+
+        status: "HADIR",
+
+        latitude: latitude,
+
+        longitude: longitude,
+
+        jarak: jarak,
+
+        selfie: selfieBase64,
+
+        device: navigator.userAgent,
+
+        browser: navigator.userAgent
+
+    };
+
+    console.log("DATA YANG DIKIRIM:", data);
+
+    try {
+
+        const response = await fetch(WEB_APP_URL, {
+
+            method: "POST",
+
+            body: JSON.stringify(data)
+
+        });
+
+        const text = await response.text();
+
+        console.log("RESPON GOOGLE APPS SCRIPT:", text);
+
+        if (text.includes('"status":"success"')) {
+
+            alert("✅ ABSENSI BERHASIL DISIMPAN!");
+
+            const tombol = document.getElementById("btnAbsen");
+
+            if (tombol) {
+                tombol.disabled = true;
+            }
+
+        } else {
+
+            alert("❌ Data gagal disimpan.\n\nRespon server:\n" + text);
+
+        }
+
+    } catch (err) {
+
+        console.error("ERROR ABSENSI:", err);
+
+        alert(
+            "❌ Gagal mengirim absensi.\n\n" +
+            "Kemungkinan koneksi ke Google Apps Script bermasalah."
+        );
+
+    }
+
+}
 
     // ===============================
     // CEK SELFIE
