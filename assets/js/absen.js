@@ -39,7 +39,9 @@ function cekStatusAbsen() {
     const tombol = document.getElementById("btnAbsen");
 
     if (!tombol) {
+
         console.log("Tombol Absen tidak ditemukan");
+
         return;
     }
 
@@ -50,103 +52,26 @@ function cekStatusAbsen() {
 }
 
 
-// ===============================
+// ======================================
 // ABSEN SEKARANG
-// ===============================
+// ======================================
 async function absenSekarang() {
 
+    console.log("================================");
+    console.log("FUNGSI ABSEN SEKARANG DIPANGGIL");
+    console.log("================================");
+
+
+    // ===============================
+    // CEK GPS
+    // ===============================
     if (!gpsValid) {
 
         alert("📍 Silakan cek lokasi terlebih dahulu.");
+
         return;
-
     }
 
-    if (!selfieValid) {
-
-        alert("📷 Silakan ambil foto selfie terlebih dahulu.");
-        return;
-
-    }
-
-    const sekarang = new Date();
-
-    const data = {
-
-        nama: localStorage.getItem("nama") || "",
-
-        username: localStorage.getItem("username") || "",
-
-        tanggal: sekarang.toLocaleDateString("id-ID"),
-
-        hari: sekarang.toLocaleDateString("id-ID", {
-            weekday: "long"
-        }),
-
-        jamMasuk: sekarang.toLocaleTimeString("id-ID"),
-
-        jamPulang: "",
-
-        status: "HADIR",
-
-        latitude: latitude,
-
-        longitude: longitude,
-
-        jarak: jarak,
-
-        selfie: selfieBase64,
-
-        device: navigator.userAgent,
-
-        browser: navigator.userAgent
-
-    };
-
-    console.log("DATA YANG DIKIRIM:", data);
-
-    try {
-
-        const response = await fetch(WEB_APP_URL, {
-
-            method: "POST",
-
-            body: JSON.stringify(data)
-
-        });
-
-        const text = await response.text();
-
-        console.log("RESPON GOOGLE APPS SCRIPT:", text);
-
-        if (text.includes('"status":"success"')) {
-
-            alert("✅ ABSENSI BERHASIL DISIMPAN!");
-
-            const tombol = document.getElementById("btnAbsen");
-
-            if (tombol) {
-                tombol.disabled = true;
-            }
-
-        } else {
-
-            alert("❌ Data gagal disimpan.\n\nRespon server:\n" + text);
-
-        }
-
-    } catch (err) {
-
-        console.error("ERROR ABSENSI:", err);
-
-        alert(
-            "❌ Gagal mengirim absensi.\n\n" +
-            "Kemungkinan koneksi ke Google Apps Script bermasalah."
-        );
-
-    }
-
-}
 
     // ===============================
     // CEK SELFIE
@@ -156,7 +81,6 @@ async function absenSekarang() {
         alert("📷 Silakan ambil foto selfie terlebih dahulu.");
 
         return;
-
     }
 
 
@@ -168,20 +92,22 @@ async function absenSekarang() {
     const tanggal =
         sekarang.toLocaleDateString("id-ID");
 
-    const jamMasuk =
-        sekarang.toLocaleTimeString("id-ID");
-
     const hari =
         sekarang.toLocaleDateString("id-ID", {
             weekday: "long"
         });
+
+    const jamMasuk =
+        sekarang.toLocaleTimeString("id-ID");
 
 
     // ===============================
     // DEVICE
     // ===============================
     const device =
-        /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+        /Android|iPhone|iPad|iPod/i.test(
+            navigator.userAgent
+        )
         ? "Mobile"
         : "PC";
 
@@ -241,10 +167,12 @@ async function absenSekarang() {
 
 
     // ===============================
-    // TAMPILKAN DATA DI CONSOLE
+    // TAMPILKAN DATA
     // ===============================
-    console.log("DATA YANG AKAN DIKIRIM:");
-    console.log(data);
+    console.log(
+        "DATA YANG AKAN DIKIRIM:",
+        data
+    );
 
 
     // ===============================
@@ -252,6 +180,7 @@ async function absenSekarang() {
     // ===============================
     const tombol =
         document.getElementById("btnAbsen");
+
 
     if (tombol) {
 
@@ -268,16 +197,20 @@ async function absenSekarang() {
     // ===============================
     try {
 
+        console.log(
+            "Mengirim data ke Google Apps Script..."
+        );
+
+
         const response = await fetch(
             WEB_APP_URL,
             {
 
                 method: "POST",
 
-                // PENTING:
-                // JANGAN menggunakan
+                // Jangan tambahkan
                 // Content-Type application/json
-                // agar tidak memicu preflight CORS
+                // untuk menghindari preflight CORS
 
                 body: JSON.stringify(data)
 
@@ -286,23 +219,23 @@ async function absenSekarang() {
 
 
         // ===============================
-        // BACA RESPONSE SERVER
+        // BACA RESPONSE
         // ===============================
         const text =
             await response.text();
 
 
         console.log(
-            "RESPON GOOGLE APPS SCRIPT:"
+            "RESPON GOOGLE APPS SCRIPT:",
+            text
         );
-
-        console.log(text);
 
 
         // ===============================
         // PARSE JSON
         // ===============================
         let hasil;
+
 
         try {
 
@@ -317,19 +250,29 @@ async function absenSekarang() {
             );
 
             alert(
-                "❌ Server memberikan response yang tidak dikenali:\n\n" +
+                "❌ Response server tidak dikenali.\n\n" +
                 text
             );
 
-            return;
+            if (tombol) {
 
+                tombol.disabled = false;
+
+                tombol.innerHTML =
+                    "✅ ABSEN SEKARANG";
+
+            }
+
+            return;
         }
 
 
         // ===============================
-        // HASIL
+        // BERHASIL
         // ===============================
-        if (hasil.status === "success") {
+        if (
+            hasil.status === "success"
+        ) {
 
             alert(
                 "✅ ABSENSI BERHASIL DISIMPAN!\n\n" +
@@ -351,11 +294,20 @@ async function absenSekarang() {
 
             }
 
-        } else {
+        }
+
+
+        // ===============================
+        // GAGAL
+        // ===============================
+        else {
 
             alert(
                 "❌ GAGAL MENYIMPAN ABSENSI\n\n" +
-                (hasil.pesan || "Kesalahan tidak diketahui")
+                (
+                    hasil.pesan ||
+                    "Kesalahan tidak diketahui"
+                )
             );
 
 
@@ -381,7 +333,7 @@ async function absenSekarang() {
 
         alert(
             "❌ GAGAL TERHUBUNG KE SERVER.\n\n" +
-            "Periksa koneksi internet dan Web App Google Apps Script."
+            "Periksa koneksi internet dan Google Apps Script."
         );
 
 
